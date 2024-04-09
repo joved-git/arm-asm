@@ -19,9 +19,19 @@ struct RegisterPack
 	Register_32bits regR9;
 	Register_32bits regR10;
 	Register_32bits regR11;
-	Register_32bits regR12;
+	Register_32bits *regFP=&regR11;			/* FP: Frame Pointer 						*/
+	Register_32bits regR12;			
+	Register_32bits *regIP=&regR12;			/* IP: Intra Procedural Call 				*/
+	Register_32bits regR13;		
+	Register_32bits *regASP=&regR13;		/* SP: Stack Pointer					 	*/
+	Register_32bits regR14;				
+	Register_32bits *regLR=&regR14;			/* LR: Link Register		 				*/		
+	Register_32bits regR15;	
+	Register_32bits *regAPC=&regR15;		/* PC: Program Counter		 				*/
+	Register_32bits regCPSR;				/* CPSR: Current Program Status Register	*/
 
-		/* 8-bit registers  		*/
+	
+	/* 8-bit registers  		*/
 	Register_8bits regB;
 	Register_8bits regC;
 	Register_8bits regD;

@@ -24,7 +24,16 @@
 #define REGISTER_R9                   &mRegisterPack.regR9
 #define REGISTER_R10                  &mRegisterPack.regR10
 #define REGISTER_R11                  &mRegisterPack.regR11
+#define REGISTER_FP                   &mRegisterPack.regR11
 #define REGISTER_R12                  &mRegisterPack.regR12
+#define REGISTER_IP                   &mRegisterPack.regR12
+#define REGISTER_R13                  &mRegisterPack.regR13
+#define REGISTER_ASP                  &mRegisterPack.regR13
+#define REGISTER_R14                  &mRegisterPack.regR14
+#define REGISTER_LR                   &mRegisterPack.regR14
+#define REGISTER_R15                  &mRegisterPack.regR15
+#define REGISTER_APC                  &mRegisterPack.regR15
+#define REGISTER_CPSR                 &mRegisterPack.regCPSR
 
 /* Shortcuts for z80 registers                             */
 #define REGISTER_B                    &mRegisterPack.regB

@@ -24,9 +24,6 @@ public:
 
 private:
     uint32_t mValue;          
-    //Register_8bits *mValueH;  
-    //Register_8bits *mValueL;
-    //bool mFullRegister;
     bool mHasJustChanged;
 };	
 

@@ -92,6 +92,25 @@
 #define STRING_REGIX            "IX"
 #define STRING_REGIY            "IY"
 
+#define STRING_REGR0            "R0       "
+#define STRING_REGR1            "R1       "
+#define STRING_REGR2            "R2       "
+#define STRING_REGR3            "R3       "
+#define STRING_REGR4            "R4       "
+#define STRING_REGR5            "R5       "
+#define STRING_REGR6            "R6       "
+#define STRING_REGR7            "R7       "
+#define STRING_REGR8            "R8       "
+#define STRING_REGR9            "R9       "
+#define STRING_REGR10           "R10      "
+
+#define STRING_REGFP            "FP (R11) "
+#define STRING_REGIP            "IP (R12) "
+#define STRING_REGASP           "SP (R13) "
+#define STRING_REGLR            "LR (R14) "
+#define STRING_REGAPC           "PC (R15) "
+#define STRING_REGCPSR          "CPSR     "
+
 #define CMD_HELP                'h'
 #define CMD_MACHINECODE         'c'
 #define CMD_EXIT                'q'

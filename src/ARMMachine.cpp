@@ -24,21 +24,20 @@ ARMMachine::ARMMachine()
     mRegisterPack.regR10.setValue(0x00000000);
     mRegisterPack.regR11.setValue(0x00000000);
     mRegisterPack.regR12.setValue(0x00000000);
+    mRegisterPack.regR13.setValue(0x00000000);
+    mRegisterPack.regR14.setValue(0x00000000);
+    mRegisterPack.regR15.setValue(0x00000000);
+    mRegisterPack.regCPSR.setValue(0x00000000);
 
     /* Initialize some registers (for test)   */
-    mRegisterPack.regR0.setValue(0x000000CC);
-    mRegisterPack.regR1.setValue(0x12345678);
-    mRegisterPack.regR2.setValue(0x01010101);
-    mRegisterPack.regR3.setValue(0xABCDEF00);
-    mRegisterPack.regR4.setValue(0x000000DD);
+    mRegisterPack.regR0.setValue(0x00000000);
+    mRegisterPack.regR1.setValue(0x01010101);
+    mRegisterPack.regR2.setValue(0x02020202);
+    mRegisterPack.regR3.setValue(0x03030303);
+    mRegisterPack.regR4.setValue(0x04040404);
 
-    printf("val=%d\n", mRegisterPack.regR1.getValue());
-    printf("val=%x\n", mRegisterPack.regR1.getValue());
-    printf("val=%8x\n", mRegisterPack.regR1.getValue());
-    printf("len uint32_t=%d\n", sizeof(uint32_t));
-    printf("len uint16_t=%d\n", sizeof(uint16_t));
-    printf("len uint8_t=%d\n", sizeof(uint8_t));
-
+    mRegisterPack.regAPC->setValue(0x08000000);
+    mRegisterPack.regASP->setValue(0x0000FFFF);
 
     /* Reset all the registers (color bool) */
     resetAllChangedRegister();
@@ -77,6 +76,10 @@ void ARMMachine::resetAllChangedRegister()
     mRegisterPack.regR10.resetChanged();
     mRegisterPack.regR11.resetChanged();
     mRegisterPack.regR12.resetChanged();
+    mRegisterPack.regR13.resetChanged();
+    mRegisterPack.regR14.resetChanged();
+    mRegisterPack.regR15.resetChanged();
+    mRegisterPack.regCPSR.resetChanged();
 }
 
 
@@ -1286,6 +1289,7 @@ void ARMMachine::displaySimpleRegisters()
 {
     printf("\n");
     //printf("[\033[31mTA\033[0m][\033[32m32\033[0m][\033[33m33\033[0m][\033[34m34\033[0m][\033[35m35\033[0m]\n"); 
+    /*
     displayReg8Bits(REGISTER_B, STRING_REGB);
     displayReg8Bits(REGISTER_C, STRING_REGC);
     printf("\n");
@@ -1318,12 +1322,35 @@ void ARMMachine::displaySimpleRegisters()
     //displayReg16Bits(REGISTER_PC, "PC ");
     //displayReg16Bits(REGISTER_SP, "SP ");
     printf("\n");
+    */
 
-    displayReg32Bits(REGISTER_R0, "R0 ");
-    displayReg32Bits(REGISTER_R1, "R1 ");
+    displayReg32Bits(REGISTER_R0, STRING_REGR0);
+    displayReg32Bits(REGISTER_R1, STRING_REGR1);
+    displayReg32Bits(REGISTER_R2, STRING_REGR2);
+    displayReg32Bits(REGISTER_R3, STRING_REGR3);
     printf("\n");
 
+    displayReg32Bits(REGISTER_R4, STRING_REGR4);
+    displayReg32Bits(REGISTER_R5, STRING_REGR5);
+    displayReg32Bits(REGISTER_R6, STRING_REGR6);
+    displayReg32Bits(REGISTER_R7, STRING_REGR7);
+    printf("\n");
 
+    displayReg32Bits(REGISTER_R8, STRING_REGR8);
+    displayReg32Bits(REGISTER_R9, STRING_REGR9);
+    displayReg32Bits(REGISTER_R10, STRING_REGR10);
+    printf("\n");
+    printf("\n");
+
+    displayReg32Bits(REGISTER_FP, STRING_REGFP);
+    displayReg32Bits(REGISTER_IP, STRING_REGIP);
+    displayReg32Bits(REGISTER_LR, STRING_REGLR);
+    printf("\n");
+    printf("\n");
+
+    displayReg32Bits(REGISTER_ASP, STRING_REGASP);
+    displayReg32Bits(REGISTER_APC, STRING_REGAPC);
+    printf("\n");
 }
 
 /* Display details registers            */
