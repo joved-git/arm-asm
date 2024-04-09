@@ -1,72 +1,44 @@
-#include "../inc/Z80Machine.h"
+#include "../inc/ARMMachine.h"
 #include "../inc/instruction_length.h"
 #include "../inc/LabelDataset.h"
 
 #include <list>
 
 /* The constructor  */
-Z80Machine::Z80Machine()
+ARMMachine::ARMMachine()
 {
     mCommandIsEntered=false;
     mEntry=NULL;
 
-    /* Define the type of the 16-bit registers  */
-    mRegisterPack.regBC.set16bitsRegisterType(HALF);
-    mRegisterPack.regBC.setHighLowRegister(&mRegisterPack.regB, &mRegisterPack.regC);
-    mRegisterPack.regDE.set16bitsRegisterType(HALF);
-    mRegisterPack.regDE.setHighLowRegister(&mRegisterPack.regD, &mRegisterPack.regE);
-    mRegisterPack.regHL.set16bitsRegisterType(HALF);
-    mRegisterPack.regHL.setHighLowRegister(&mRegisterPack.regH, &mRegisterPack.regL);
-    mRegisterPack.regAF.set16bitsRegisterType(HALF);
-    mRegisterPack.regAF.setHighLowRegister(&mRegisterPack.regA, &mRegisterPack.regF);
+    /* Initialize 32-bit registers to 0     */
+    mRegisterPack.regR0.setValue(0x00000000);
+    mRegisterPack.regR1.setValue(0x00000000);
+    mRegisterPack.regR2.setValue(0x00000000);
+    mRegisterPack.regR3.setValue(0x00000000);
+    mRegisterPack.regR4.setValue(0x00000000);
+    mRegisterPack.regR5.setValue(0x00000000);
+    mRegisterPack.regR6.setValue(0x00000000);
+    mRegisterPack.regR7.setValue(0x00000000);
+    mRegisterPack.regR8.setValue(0x00000000);
+    mRegisterPack.regR9.setValue(0x00000000);
+    mRegisterPack.regR10.setValue(0x00000000);
+    mRegisterPack.regR11.setValue(0x00000000);
+    mRegisterPack.regR12.setValue(0x00000000);
 
-    mRegisterPack.regSP.set16bitsRegisterType(FULL);
-    mRegisterPack.regPC.set16bitsRegisterType(FULL);
-    mRegisterPack.regIX.set16bitsRegisterType(FULL);
-    mRegisterPack.regIY.set16bitsRegisterType(FULL);
+    /* Initialize some registers (for test)   */
+    mRegisterPack.regR0.setValue(0x000000CC);
+    mRegisterPack.regR1.setValue(0x12345678);
+    mRegisterPack.regR2.setValue(0x01010101);
+    mRegisterPack.regR3.setValue(0xABCDEF00);
+    mRegisterPack.regR4.setValue(0x000000DD);
 
-    mRegisterPack.regAFp.set16bitsRegisterType(FULL);
-    mRegisterPack.regBCp.set16bitsRegisterType(FULL);
-    mRegisterPack.regDEp.set16bitsRegisterType(FULL);
-    mRegisterPack.regHLp.set16bitsRegisterType(FULL);
+    printf("val=%d\n", mRegisterPack.regR1.getValue());
+    printf("val=%x\n", mRegisterPack.regR1.getValue());
+    printf("val=%8x\n", mRegisterPack.regR1.getValue());
+    printf("len uint32_t=%d\n", sizeof(uint32_t));
+    printf("len uint16_t=%d\n", sizeof(uint16_t));
+    printf("len uint8_t=%d\n", sizeof(uint8_t));
 
-    /* Initialize registers to 0 except SP  */
-    mRegisterPack.regA.setValue(0x00);
-    mRegisterPack.regB.setValue(0x00);
-	mRegisterPack.regC.setValue(0x00);
-	mRegisterPack.regD.setValue(0x00);
-	mRegisterPack.regE.setValue(0x00);
-	mRegisterPack.regL.setValue(0x00);
-    mRegisterPack.regI.setValue(0x00);  
-	mRegisterPack.regR.setValue(0x00);
-	mRegisterPack.regF.setValue(0b00000000);
-    
-    mRegisterPack.regPC.setValue(0x0000);
-    mRegisterPack.regIX.setValue(0x0000);
-    mRegisterPack.regIY.setValue(0x0000);
-    mRegisterPack.regSP.setValue(INITIAL_STACK_POINTER);
-
-    mRegisterPack.regAFp.setValue(0x0000);
-    mRegisterPack.regBCp.setValue(0x0000);
-    mRegisterPack.regDEp.setValue(0x0000);
-    mRegisterPack.regHLp.setValue(0x0000);
-
-    /* Reset the interrupt flip-flops   */
-    mRegisterPack.iff1=false;
-    mRegisterPack.iff2=false;
-
-     /* Initialize some registers (for test)   */
-    mRegisterPack.regB.setValue(0x01);
-	mRegisterPack.regC.setValue(0xAA);
-	mRegisterPack.regD.setValue(0x0C);
-	mRegisterPack.regE.setValue(0x10);
-	mRegisterPack.regL.setValue(0xC8);
-    mRegisterPack.regR.setValue(0xFE);
-    mRegisterPack.regI.setValue(0x33);
-    mRegisterPack.regPC.setValue(0x1234);
-    mRegisterPack.regHL.setValue(0xFE14);
-    mRegisterPack.regIX.setValue(0x1200);
-    mRegisterPack.regIY.setValue(0x1400);
 
     /* Reset all the registers (color bool) */
     resetAllChangedRegister();
@@ -78,8 +50,9 @@ Z80Machine::Z80Machine()
     mMemory=new(Memory);
 }
 
+
 /* The destructor  */
-Z80Machine::~Z80Machine()
+ARMMachine::~ARMMachine()
 {
     /* Destroying the memory    */
     delete(mMemory);
@@ -88,47 +61,33 @@ Z80Machine::~Z80Machine()
 
 
 /* Reset or init all the changed bool onto all registers.   */
-void Z80Machine::resetAllChangedRegister()
+void ARMMachine::resetAllChangedRegister()
 {
-    /* 8-bit registers   */
-    mRegisterPack.regB.resetChanged();
-    mRegisterPack.regC.resetChanged();
-    mRegisterPack.regD.resetChanged();
-    mRegisterPack.regE.resetChanged();
-    mRegisterPack.regH.resetChanged();
-    mRegisterPack.regL.resetChanged();
-    mRegisterPack.regA.resetChanged();
-    mRegisterPack.regF.resetChanged();
-    mRegisterPack.regF.resetColorChangedFlag();
-    mRegisterPack.regI.resetChanged();
-    mRegisterPack.regR.resetChanged();
-    
-    /* 16-bit registers   */
-    mRegisterPack.regBC.resetChanged();
-    mRegisterPack.regDE.resetChanged();
-    mRegisterPack.regHL.resetChanged();
-    mRegisterPack.regAF.resetChanged();
-    mRegisterPack.regPC.resetChanged();
-    mRegisterPack.regSP.resetChanged();
-    mRegisterPack.regIX.resetChanged();
-    mRegisterPack.regIY.resetChanged();
-
-    /* Alternate 16-bit registers   */
-    mRegisterPack.regBCp.resetChanged();
-    mRegisterPack.regDEp.resetChanged();
-    mRegisterPack.regHLp.resetChanged();
-    mRegisterPack.regAFp.resetChanged();
+    /* 32-bit registers   */
+    mRegisterPack.regR0.resetChanged();
+    mRegisterPack.regR1.resetChanged();
+    mRegisterPack.regR2.resetChanged();
+    mRegisterPack.regR3.resetChanged();
+    mRegisterPack.regR4.resetChanged();
+    mRegisterPack.regR5.resetChanged();
+    mRegisterPack.regR6.resetChanged();
+    mRegisterPack.regR7.resetChanged();
+    mRegisterPack.regR8.resetChanged();
+    mRegisterPack.regR9.resetChanged();
+    mRegisterPack.regR10.resetChanged();
+    mRegisterPack.regR11.resetChanged();
+    mRegisterPack.regR12.resetChanged();
 }
 
 
 /* This method give the parity of a byte    */
-uint8_t Z80Machine::calcParity(uint8_t pByte)
+uint8_t ARMMachine::calcParity(uint8_t pByte)
 {
     return(!(parityTable[pByte & 0x0F] ^ parityTable[(pByte & 0xF0) >> 4]));
 }
 
 /* Byte to binary function	*/
-const char *Z80Machine::byteToBinary(uint8_t x)
+const char *ARMMachine::byteToBinary(uint8_t x)
 {
     static char b[9];
     b[0] = '\0';
@@ -143,7 +102,7 @@ const char *Z80Machine::byteToBinary(uint8_t x)
 }
 
 /* Register to bit converter  */
-uint8_t Z80Machine::registerToBit(char *pRegister)
+uint8_t ARMMachine::registerToBit(char *pRegister)
 {
     char reg='0';
     uint8_t retBit=0;
@@ -213,7 +172,7 @@ uint8_t Z80Machine::registerToBit(char *pRegister)
 
 
 /* Condition to bit converter  */
-uint8_t Z80Machine::conditionToBit(char *pCondition)
+uint8_t ARMMachine::conditionToBit(char *pCondition)
 {
     uint8_t retBit=0;
     
@@ -263,14 +222,14 @@ uint8_t Z80Machine::conditionToBit(char *pCondition)
 
 
 /* Convert the 3-bit number (string) into its binary value (from 0 to 7)    */
-uint8_t Z80Machine::numberToBit(char *pNumber)
+uint8_t ARMMachine::numberToBit(char *pNumber)
 {
     uint8_t retBit=pNumber[0]-'0';
     return retBit;
 }
 
 /* Bit to register converter     */
-uint8_t Z80Machine::bitToRegister(uint8_t pBit, char *pRetChar)
+uint8_t ARMMachine::bitToRegister(uint8_t pBit, char *pRetChar)
 {
     uint8_t ret=0;
 
@@ -358,7 +317,7 @@ uint8_t Z80Machine::bitToRegister(uint8_t pBit, char *pRetChar)
 
 
 /* Convert the uint8_t value into the name of the condition */
-uint8_t Z80Machine::bitToCondition(uint8_t pBit, char *pRetChar)
+uint8_t ARMMachine::bitToCondition(uint8_t pBit, char *pRetChar)
 {
     uint8_t ret=0;
 
@@ -405,7 +364,7 @@ uint8_t Z80Machine::bitToCondition(uint8_t pBit, char *pRetChar)
 
 
 /* Tell if the given condition is true or not   */
-bool Z80Machine::isConditionTrue(uint8_t pCond)
+bool ARMMachine::isConditionTrue(uint8_t pCond)
 {
     bool retCond=false;
 
@@ -449,7 +408,7 @@ bool Z80Machine::isConditionTrue(uint8_t pCond)
 
 
 /* Change lowercase to uppercase into the entry */
-void Z80Machine::toUpper(char *pEntry)
+void ARMMachine::toUpper(char *pEntry)
 {
         for (int i = 0; pEntry[i]!='\0'; i++) 
         {
@@ -461,7 +420,7 @@ void Z80Machine::toUpper(char *pEntry)
 }
 
 /* Verify if the entry is an hexa number    */
-bool Z80Machine::isACode()
+bool ARMMachine::isACode()
 {
     bool code=true;
     bool cont=true;
@@ -503,7 +462,7 @@ bool Z80Machine::isACode()
 
 
 /* This method dumps 16 bytes of memory from the given address. */
-void Z80Machine::dumpMemory(uint16_t pAddress)
+void ARMMachine::dumpMemory(uint16_t pAddress)
 {
     uint16_t dumpToView=16;
 
@@ -523,7 +482,7 @@ void Z80Machine::dumpMemory(uint16_t pAddress)
 }
 
 /* Internal method to find the entry type   */
-typeOfEntry Z80Machine::findEntryType()
+typeOfEntry ARMMachine::findEntryType()
 {
     /* The default type is COMMAND  */
     typeOfEntry type=NOTHING;
@@ -557,7 +516,7 @@ typeOfEntry Z80Machine::findEntryType()
 }
 
 /* Give a command to be analysed    */
-void Z80Machine::setEntry(char *pEntry)
+void ARMMachine::setEntry(char *pEntry)
 {
     mEntry=pEntry;
 
@@ -575,7 +534,7 @@ void Z80Machine::setEntry(char *pEntry)
 
 
 /* Convert the hexa string into real value  */
-uint32_t Z80Machine::toValue(char *pCode, uint8_t *pLen, uint8_t *pLenEffective)
+uint32_t ARMMachine::toValue(char *pCode, uint8_t *pLen, uint8_t *pLenEffective)
 {
     uint32_t hexaValue=0;
     uint8_t i=0;
@@ -607,7 +566,7 @@ uint32_t Z80Machine::toValue(char *pCode, uint8_t *pLen, uint8_t *pLenEffective)
 
 
 /* Convert the decimal string into real value  */
-uint32_t Z80Machine::toDecValue(char *pCode, uint8_t *pLen, uint8_t *pLenEffective)
+uint32_t ARMMachine::toDecValue(char *pCode, uint8_t *pLen, uint8_t *pLenEffective)
 {
     uint32_t decValue=0;
     uint8_t i=0;
@@ -638,7 +597,7 @@ uint32_t Z80Machine::toDecValue(char *pCode, uint8_t *pLen, uint8_t *pLenEffecti
 
 
 /* Transform the instruction into hex number  */
-int32_t Z80Machine::toDec(char *pCode)
+int32_t ARMMachine::toDec(char *pCode)
 {
     int64_t decValue=0;
     uint8_t i=0;
@@ -662,7 +621,7 @@ int32_t Z80Machine::toDec(char *pCode)
 }      
 
 /* Give the address of a register defined by its binary code    */
-Register_8bits *Z80Machine::get8bitsRegisterAddress(uint8_t pReg)
+Register_8bits *ARMMachine::get8bitsRegisterAddress(uint8_t pReg)
 {
     Register_8bits *regReturn;
 
@@ -701,7 +660,7 @@ Register_8bits *Z80Machine::get8bitsRegisterAddress(uint8_t pReg)
 }
 
 /* Give the address of a register defined by its binary code    */
-Register_16bits *Z80Machine::get16bitsRegisterAddress(uint8_t pReg)
+Register_16bits *ARMMachine::get16bitsRegisterAddress(uint8_t pReg)
 {
     Register_16bits *regReturn;
 
@@ -761,7 +720,7 @@ Register_16bits *Z80Machine::get16bitsRegisterAddress(uint8_t pReg)
 
 
 /* Clean the line from an asm  file */
-void Z80Machine::clean_line(char *pStr)
+void ARMMachine::clean_line(char *pStr)
 {
     bool noChar=true;
     uint8_t i=0;
@@ -791,7 +750,7 @@ void Z80Machine::clean_line(char *pStr)
 
 
 /* Clean the n operand    */
-int8_t Z80Machine::clean_n(char *pOp)
+int8_t ARMMachine::clean_n(char *pOp)
 {
     uint8_t retCode=ERR_NO_ERROR;
     char *posChar;
@@ -836,7 +795,7 @@ int8_t Z80Machine::clean_n(char *pOp)
 
 
 /* Clean the nn operand    */
-int8_t Z80Machine::clean_nn(char *pOp)
+int8_t ARMMachine::clean_nn(char *pOp)
 {
     uint8_t retCode=ERR_NO_ERROR;
     char *posChar;
@@ -900,14 +859,14 @@ int8_t Z80Machine::clean_nn(char *pOp)
 
 
 /* Clean a cc operand   */
-int8_t Z80Machine::clean_cc(char *pOp)
+int8_t ARMMachine::clean_cc(char *pOp)
 {
     return 0;
 }
 
 
 /* Clean the (nn) operand    */
-int8_t Z80Machine::clean_inn(char *pOp)
+int8_t ARMMachine::clean_inn(char *pOp)
 {
     uint8_t retCode=ERR_NO_ERROR;
     char *posChar;
@@ -927,7 +886,7 @@ int8_t Z80Machine::clean_inn(char *pOp)
 
 
 /* Clean the (IX+#nn) and the (IY+#nn) operand */
-int8_t Z80Machine::clean_ixn(char *pOp)
+int8_t ARMMachine::clean_ixn(char *pOp)
 {
     uint8_t retCode=ERR_NO_ERROR;
     char *posChar;
@@ -978,7 +937,7 @@ int8_t Z80Machine::clean_ixn(char *pOp)
 
 
 /* Clean the r operand  */
-int8_t Z80Machine::clean_r(char *pOp)
+int8_t ARMMachine::clean_r(char *pOp)
 {
     uint8_t retCode=ERR_NO_ERROR;
 
@@ -999,7 +958,7 @@ int8_t Z80Machine::clean_r(char *pOp)
 
 
 /* Clean the rr operand  */
-int8_t Z80Machine::clean_rr(char *pOp)
+int8_t ARMMachine::clean_rr(char *pOp)
 {
     uint8_t retCode=ERR_NO_ERROR;
 
@@ -1019,7 +978,7 @@ int8_t Z80Machine::clean_rr(char *pOp)
 
 
 /* Clean the e operand  */
-int8_t Z80Machine::clean_e(char *pOp)
+int8_t ARMMachine::clean_e(char *pOp)
 {
     uint8_t retCode=ERR_NO_ERROR;
     bool cont=true;
@@ -1066,13 +1025,13 @@ int8_t Z80Machine::clean_e(char *pOp)
 
 
 /* Give the execution mode.     */
-bool Z80Machine::getExecutionMode()
+bool ARMMachine::getExecutionMode()
 {
     return mExecMode;
 }
 
 /*
-void Z80Machine::displayRegB()
+void ARMMachine::displayRegB()
 {
     // printf("bool=%d\n", mRegisterPack.regB.hasJustChanged()?1:0);
 
@@ -1086,7 +1045,7 @@ void Z80Machine::displayRegB()
     }
 }
 
-void Z80Machine::displayRegC()
+void ARMMachine::displayRegC()
 {
     // printf("bool=%d\n", mRegisterPack.regB.hasJustChanged()?1:0);
 
@@ -1100,7 +1059,7 @@ void Z80Machine::displayRegC()
     }
 }
 
-void Z80Machine::displayRegD()
+void ARMMachine::displayRegD()
 {
     // printf("bool=%d\n", mRegisterPack.regB.hasJustChanged()?1:0);
 
@@ -1115,7 +1074,7 @@ void Z80Machine::displayRegD()
 }
 
 
-void Z80Machine::displayRegE()
+void ARMMachine::displayRegE()
 {
     // printf("bool=%d\n", mRegisterPack.regB.hasJustChanged()?1:0);
 
@@ -1130,7 +1089,7 @@ void Z80Machine::displayRegE()
 }*/
 
 
-void Z80Machine::displayReg8Bits(Register_8bits *pReg, const char *pCharReg)
+void ARMMachine::displayReg8Bits(Register_8bits *pReg, const char *pCharReg)
 {
     // printf("bool=%d\n", pReg->hasJustChanged()?1:0);
 
@@ -1145,7 +1104,7 @@ void Z80Machine::displayReg8Bits(Register_8bits *pReg, const char *pCharReg)
 }
 
 
-void Z80Machine::displayReg16Bits(Register_16bits *pReg, const char *pCharReg)
+void ARMMachine::displayReg16Bits(Register_16bits *pReg, const char *pCharReg)
 {
     // printf("bool=%d\n", pReg->hasJustChanged()?1:0);
     if (pReg->hasJustChanged())
@@ -1158,7 +1117,20 @@ void Z80Machine::displayReg16Bits(Register_16bits *pReg, const char *pCharReg)
     }
 }
 
-void Z80Machine::displayDetailsRegisterF()
+void ARMMachine::displayReg32Bits(Register_32bits *pReg, const char *pCharReg)
+{
+    //printf("bool=%d\n", pReg->hasJustChanged()?1:0);
+    if (pReg->hasJustChanged())
+    {
+        printf("\033[0m%s [\033[33m%08X\033[0m]    ", pCharReg, pReg->getValue());
+    }
+    else
+    {
+        printf("%s [%08X]    ", pCharReg, pReg->getValue());
+    }
+}
+
+void ARMMachine::displayDetailsRegisterF()
 {
     /* xxxjoexxx - continue the display below   */
     printf("\b\b\b\b\b\033[0m[");
@@ -1310,7 +1282,7 @@ void Z80Machine::displayDetailsRegisterF()
 }
 
 /* Display registers            */
-void Z80Machine::displaySimpleRegisters()
+void ARMMachine::displaySimpleRegisters()
 {
     printf("\n");
     //printf("[\033[31mTA\033[0m][\033[32m32\033[0m][\033[33m33\033[0m][\033[34m34\033[0m][\033[35m35\033[0m]\n"); 
@@ -1343,13 +1315,19 @@ void Z80Machine::displaySimpleRegisters()
     printf("\n");
     printf("\n");
 
-    displayReg16Bits(REGISTER_PC, "PC ");
-    displayReg16Bits(REGISTER_SP, "SP ");
+    //displayReg16Bits(REGISTER_PC, "PC ");
+    //displayReg16Bits(REGISTER_SP, "SP ");
     printf("\n");
+
+    displayReg32Bits(REGISTER_R0, "R0 ");
+    displayReg32Bits(REGISTER_R1, "R1 ");
+    printf("\n");
+
+
 }
 
 /* Display details registers            */
-void Z80Machine::displayAllRegisters()
+void ARMMachine::displayAllRegisters()
 {
     printf("\n");
     //printf("[\033[31m31\033[0m][\033[32m32\033[0m][\033[33m33\033[0m][\033[34m34\033[0m][\033[35m35\033[0m]\n"); 
@@ -1406,7 +1384,7 @@ void Z80Machine::displayAllRegisters()
 
 
 /* Display registers in exec mode           */
-void Z80Machine::displayExecRegisters()
+void ARMMachine::displayExecRegisters()
 {
     printf("\n");
     displayReg8Bits(REGISTER_B, STRING_REGB);
@@ -1455,7 +1433,7 @@ void Z80Machine::displayExecRegisters()
 
 
 /* Display memory from (PC)     */
-void Z80Machine::displayMemory(const char *pAddress)
+void ARMMachine::displayMemory(const char *pAddress)
 {
     uint8_t lenValue=0;
     uint8_t lenEff=0;
@@ -1515,14 +1493,14 @@ void Z80Machine::displayMemory(const char *pAddress)
 
 
 /* Give the next instruction as a string    */
-char *Z80Machine::getInstruction()
+char *ARMMachine::getInstruction()
 {
     return mInstruction;
 }
 
 
 /* Load a file with codes or instructions   */
-void Z80Machine::loadCode(char *pFilename)
+void ARMMachine::loadCode(char *pFilename)
 {
     FILE *file=NULL;
     bool notTheEnd=true;
@@ -1721,7 +1699,7 @@ void Z80Machine::loadCode(char *pFilename)
 }
 
 /* Interpret the machine code   */
-uint8_t Z80Machine::interpretCode(uint32_t codeInHexa, uint8_t len, uint8_t pMode)
+uint8_t ARMMachine::interpretCode(uint32_t codeInHexa, uint8_t len, uint8_t pMode)
 {
     //uint32_t codeInHexa;
     //uint8_t len=0;
@@ -9099,8 +9077,8 @@ uint8_t Z80Machine::interpretCode(uint32_t codeInHexa, uint8_t len, uint8_t pMod
             if (pMode==INTP_EXECUTE || pMode==INTP_EXECUTE_BLIND)
             {
                 /* Load I register  */
-                mRegisterPack.iff1=false;
-                mRegisterPack.iff2=false;
+                //mRegisterPack.iff1=false;
+                //mRegisterPack.iff2=false;
 
                 /* Modify flags here after operation    */
                 /* Nothing here                         */
@@ -9123,8 +9101,8 @@ uint8_t Z80Machine::interpretCode(uint32_t codeInHexa, uint8_t len, uint8_t pMod
             if (pMode==INTP_EXECUTE || pMode==INTP_EXECUTE_BLIND)
             {
                 /* Load I register  */
-                mRegisterPack.iff1=true;
-                mRegisterPack.iff2=true;
+                //mRegisterPack.iff1=true;
+                //mRegisterPack.iff2=true;
 
                 /* Modify flags here after operation    */
                 /* Nothing here                         */
@@ -9153,7 +9131,7 @@ uint8_t Z80Machine::interpretCode(uint32_t codeInHexa, uint8_t len, uint8_t pMod
 }
 
 /* Check if it will be an half carry on an 8-bit addition.    */
-bool Z80Machine::checkHalfCarryOnAdd8(uint8_t pB1, uint8_t pB2)
+bool ARMMachine::checkHalfCarryOnAdd8(uint8_t pB1, uint8_t pB2)
 {
     if ((pB1 & 0x0F) + (pB2 & 0x0F)>0x0F)
     {
@@ -9167,7 +9145,7 @@ bool Z80Machine::checkHalfCarryOnAdd8(uint8_t pB1, uint8_t pB2)
 
 
 /* Check if it will be a carry on an 8-bit addition.          */
-bool Z80Machine::checkCarryOnAdd8(uint8_t pB1, uint8_t pB2)
+bool ARMMachine::checkCarryOnAdd8(uint8_t pB1, uint8_t pB2)
 {
     if (pB1 + pB2 > 0xFF)
     {
@@ -9180,7 +9158,7 @@ bool Z80Machine::checkCarryOnAdd8(uint8_t pB1, uint8_t pB2)
 }
 
 /* Check if it will be an half carry on an 16-bit addition.    */
-bool Z80Machine::checkHalfCarryOnAdd16(uint16_t pW1, uint16_t pW2)
+bool ARMMachine::checkHalfCarryOnAdd16(uint16_t pW1, uint16_t pW2)
 {
     if ((pW1 & 0x0FFF) + (pW2 & 0x0FFF)>0x0FFF)
     {
@@ -9194,7 +9172,7 @@ bool Z80Machine::checkHalfCarryOnAdd16(uint16_t pW1, uint16_t pW2)
 
 
 /* Check if it will be a carry on an 16-bit addition.          */
-bool Z80Machine::checkCarryOnAdd16(uint16_t pW1, uint16_t pW2)
+bool ARMMachine::checkCarryOnAdd16(uint16_t pW1, uint16_t pW2)
 {
     if (pW1 + pW2 > 0xFFFF)
     {
@@ -9208,7 +9186,7 @@ bool Z80Machine::checkCarryOnAdd16(uint16_t pW1, uint16_t pW2)
 
 
 /* Check if it will be an overflow on an addition.      */
-bool Z80Machine::checkOverflowOnAdd8(uint8_t pB1, uint8_t pB2)
+bool ARMMachine::checkOverflowOnAdd8(uint8_t pB1, uint8_t pB2)
 {
     if ((SIGN(pB1)==SIGN(pB2)) && (SIGN(pB1) != SIGN(pB1+pB2)))
     {
@@ -9222,7 +9200,7 @@ bool Z80Machine::checkOverflowOnAdd8(uint8_t pB1, uint8_t pB2)
 
 
 /* Check if it will be an overflow on an substraction.      */
-bool Z80Machine::checkOverflowOnSub8(uint8_t pB1, uint8_t pB2)
+bool ARMMachine::checkOverflowOnSub8(uint8_t pB1, uint8_t pB2)
 {
     if ((SIGN(pB1)!=SIGN(pB2)) && (SIGN(pB1) != SIGN(pB1-pB2)))
     {
@@ -9235,7 +9213,7 @@ bool Z80Machine::checkOverflowOnSub8(uint8_t pB1, uint8_t pB2)
 }
 
 /* Check if it will be an half borrow on an 8-bit substraction  */
-bool Z80Machine::checkHalfBorrowOnSub8(uint8_t pB1, uint8_t pB2)
+bool ARMMachine::checkHalfBorrowOnSub8(uint8_t pB1, uint8_t pB2)
 {
     if ((pB1 & 0x0F) < (pB2 & 0x0F))
     {
@@ -9248,7 +9226,7 @@ bool Z80Machine::checkHalfBorrowOnSub8(uint8_t pB1, uint8_t pB2)
 }
 
 /* Check if it will be an half borrow on an 8-bit substraction  */
-bool Z80Machine::checkHalfBorrowOnSub16(uint16_t pW1, uint16_t pW2)
+bool ARMMachine::checkHalfBorrowOnSub16(uint16_t pW1, uint16_t pW2)
 {
     if ((pW1 & 0x0FFF) < (pW2 & 0x0FFF))
     {
@@ -9261,7 +9239,7 @@ bool Z80Machine::checkHalfBorrowOnSub16(uint16_t pW1, uint16_t pW2)
 }
 
 /* Check if it will be a borrow on an 8-bit substraction */
-bool Z80Machine::checkBorrowOnSub8(uint8_t pB1, uint8_t pB2)
+bool ARMMachine::checkBorrowOnSub8(uint8_t pB1, uint8_t pB2)
 {
     if (pB1 < pB2)
     {
@@ -9275,7 +9253,7 @@ bool Z80Machine::checkBorrowOnSub8(uint8_t pB1, uint8_t pB2)
 
 
 /* Check if it will be a borrow on an 16-bit substraction   */
-bool Z80Machine::checkBorrowOnSub16(uint16_t pW1, uint16_t pW2)
+bool ARMMachine::checkBorrowOnSub16(uint16_t pW1, uint16_t pW2)
 {
     if (pW1 < pW2)
     {
@@ -9289,7 +9267,7 @@ bool Z80Machine::checkBorrowOnSub16(uint16_t pW1, uint16_t pW2)
 
 
 /* Used to cut the instruction  */
-int8_t Z80Machine::cutInstruction(char *pInstruction, char *pInst, char *pOp1, char *pOp2)
+int8_t ARMMachine::cutInstruction(char *pInstruction, char *pInst, char *pOp1, char *pOp2)
 {
     int8_t nbOfComp=0;
     int8_t retCheck=0;
@@ -9342,7 +9320,7 @@ int8_t Z80Machine::cutInstruction(char *pInstruction, char *pInst, char *pOp1, c
 }
 
 /* Find machine code    */
-uint32_t Z80Machine::findMachineCode(char *pInstruction, uint8_t *pLen)
+uint32_t ARMMachine::findMachineCode(char *pInstruction, uint8_t *pLen)
 {
     uint32_t retCode=NOT_DECODED;
     char str_inst[MAX_LEN];
@@ -11252,7 +11230,7 @@ uint32_t Z80Machine::findMachineCode(char *pInstruction, uint8_t *pLen)
 }
 
 /* Give the next instruction to execute.    */
-uint32_t Z80Machine::getNextInstruction(char *pInstr, uint8_t *pLen)
+uint32_t ARMMachine::getNextInstruction(char *pInstr, uint8_t *pLen)
 {
     //uint8_t len=0;
     uint32_t machineCode=0;
@@ -11309,7 +11287,7 @@ uint32_t Z80Machine::getNextInstruction(char *pInstr, uint8_t *pLen)
 }
 
 /* Analyse the command  */
-bool Z80Machine::analyse()
+bool ARMMachine::analyse()
 {
     typeOfEntry type=NOTHING;
     bool retValue=false;
@@ -11378,6 +11356,7 @@ bool Z80Machine::analyse()
                             printf("x <dec>     convert <dec> to hexa.\n");
                             printf("d <hex>     convert <hex> to decimal.\n");
                             printf("b <hex>     convert <hex> to binary.\n");
+                            printf("e           gives some examples.\n");
                             printf("q           quit me.\n");
                             printf("\n");
                             printf("<cmd>       execute the command.\n");

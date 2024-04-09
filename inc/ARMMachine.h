@@ -1,5 +1,5 @@
-#ifndef Z80MACHINE_H
-#define Z80MACHINE_H
+#ifndef ARMMachine_H
+#define ARMMachine_H
 
 #include <inttypes.h>
 
@@ -11,6 +11,22 @@
 #include "../inc/RegisterPack.h"
 #include "../inc/Memory.h"
 
+/* Shortcuts for ARM registers                             */
+#define REGISTER_R0                   &mRegisterPack.regR0
+#define REGISTER_R1                   &mRegisterPack.regR1
+#define REGISTER_R2                   &mRegisterPack.regR2
+#define REGISTER_R3                   &mRegisterPack.regR3
+#define REGISTER_R4                   &mRegisterPack.regR4
+#define REGISTER_R5                   &mRegisterPack.regR5
+#define REGISTER_R6                   &mRegisterPack.regR6
+#define REGISTER_R7                   &mRegisterPack.regR7
+#define REGISTER_R8                   &mRegisterPack.regR8
+#define REGISTER_R9                   &mRegisterPack.regR9
+#define REGISTER_R10                  &mRegisterPack.regR10
+#define REGISTER_R11                  &mRegisterPack.regR11
+#define REGISTER_R12                  &mRegisterPack.regR12
+
+/* Shortcuts for z80 registers                             */
 #define REGISTER_B                    &mRegisterPack.regB
 #define REGISTER_C                    &mRegisterPack.regC
 #define REGISTER_D                    &mRegisterPack.regD
@@ -68,11 +84,11 @@
 #define C_IS(s) mRegisterPack.regF.setCarryFlag(s)
 #define C_GET   mRegisterPack.regF.getCarryFlag()
 
-class Z80Machine 
+class ARMMachine 
 {
 public:
-    Z80Machine();
-    ~Z80Machine();
+    ARMMachine();
+    ~ARMMachine();
 
     /// @brief  This method is used to enter the command that will be analysed.
     /// @param  The command that was entered in command line.  
@@ -361,6 +377,11 @@ private:
     /// @param  The reg to display.
     /// @return Nothing.
     void displayReg16Bits(Register_16bits *, const char *);
+
+    /// @brief  Display the value of 32-bit register and change color if needed.
+    /// @param  The reg to display.
+    /// @return Nothing.
+    void displayReg32Bits(Register_32bits *, const char *);
 
     /// @brief  Display the details of the Register F.
     /// @param  None.

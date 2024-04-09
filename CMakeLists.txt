@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.16)
-project(z80)
+project(arm)
 
 #include($ENV{HOME}/.cmake/CommonIncludes.cmake)
 #include(inc/version.hpp)
@@ -22,14 +22,15 @@ set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -D__FILENAME__='\"$(subst ${CMAKE_SOURCE
 #find_package(rbc-data-model)
 #find_package(Poco COMPONENTS Util Foundation)
 
-set(SRC_FILES src/z80.cpp
+set(SRC_FILES src/arm.cpp
     src/Register_8bits.cpp
     src/Register_F.cpp
     src/Register_16bits.cpp
+	src/Register_32bits.cpp
     src/Memory.cpp
     src/Label.cpp
     src/LabelDataset.cpp
-    src/Z80Machine.cpp)       
+    src/ARMMachine.cpp)       
 
 #add_definitions(-DQT_DEPRECATED_WARNINGS)
 
