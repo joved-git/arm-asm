@@ -1,6 +1,7 @@
 #include "../inc/ARMMachine.h"
 #include "../inc/instruction_length.h"
 #include "../inc/LabelDataset.h"
+#include "../inc/version.hpp"
 
 #include <list>
 
@@ -11365,6 +11366,8 @@ bool ARMMachine::analyse()
                             printf("\n");
                             printf("<cmd>       execute the command.\n");
                             printf("<code>      execute the code.\n");
+                            printf("\n");
+                            printf("v           about ARM-ASM.\n");
                         }
                         else
                         {
@@ -11388,6 +11391,8 @@ bool ARMMachine::analyse()
                             printf("\n");
                             printf("<cmd>       execute the command.\n");
                             printf("<code>      execute the code.\n");
+                            printf("\n");
+                            printf("v           about ARM-ASM.\n");
                         }
                         break;
             
@@ -11533,6 +11538,12 @@ bool ARMMachine::analyse()
                                 loadCode(filename);
                             }
                         }        
+                        break;
+
+                    case CMD_ABOUT:
+                        printf("\nARM-ASM emulator. Ver: %s\n", VERSION);
+                        printf("\nVisit: https://github.com/joved-git/arm-asm\n");
+                        printf("Joved - 2024-2025\n");
                         break;
                 }
                 break;

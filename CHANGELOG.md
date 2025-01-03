@@ -1,4 +1,7 @@
-# 0.0.2 (version in progress)
+# 0.0.3
+Add new 'v' command for About.
+
+# 0.0.2
 First compilable version with only Register_32bits class. Only the 'r' and the 'h' commands give something.
 Add new registers (FP, IP, SP, LR, PC, CPSR).
 Display all the registers.
