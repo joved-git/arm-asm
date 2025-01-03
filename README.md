@@ -1,5 +1,5 @@
-# z80
-This software is a command line tool used to explore the Zilog Z80 processor.
+# ARM-ASM (arm-asm)
+This software is a command line tool used to explore ARM processors.
 
 Please, this is the almost first debut of this program. I will prepare Specifications document as soon as possible.
 See ya !
