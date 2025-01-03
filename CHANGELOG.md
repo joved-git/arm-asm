@@ -1,10 +1,7 @@
-# 0.0.3 (not yet implemented)
+# 0.0.2 (version in progress)
+First compilable version with only Register_32bits class. Only the 'r' and the 'h' commands give something.
 Add new registers (FP, IP, SP, LR, PC, CPSR).
 Display all the registers.
-
-# 0.0.2 (version in progress)
-First compilation with only Register_32bits class.
-All must be commented.
 
 # 0.0.1
 First version of the ARM software. Inherite from the z80 software.
