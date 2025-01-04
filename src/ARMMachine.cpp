@@ -11362,12 +11362,12 @@ bool ARMMachine::analyse()
                             printf("x <dec>     convert <dec> to hexa.\n");
                             printf("d <hex>     convert <hex> to decimal.\n");
                             printf("b <hex>     convert <hex> to binary.\n");
+                            printf("v           about ARM-ASM.\n");
                             printf("q           quit me.\n");
                             printf("\n");
                             printf("<cmd>       execute the command.\n");
                             printf("<code>      execute the code.\n");
                             printf("\n");
-                            printf("v           about ARM-ASM.\n");
                         }
                         else
                         {
@@ -11387,12 +11387,12 @@ bool ARMMachine::analyse()
                             printf("d <hex>     convert <hex> to decimal.\n");
                             printf("b <hex>     convert <hex> to binary.\n");
                             printf("e           gives some examples.\n");
+                            printf("v           about ARM-ASM.\n");
                             printf("q           quit me.\n");
                             printf("\n");
                             printf("<cmd>       execute the command.\n");
                             printf("<code>      execute the code.\n");
                             printf("\n");
-                            printf("v           about ARM-ASM.\n");
                         }
                         break;
             
@@ -11542,7 +11542,7 @@ bool ARMMachine::analyse()
 
                     case CMD_ABOUT:
                         printf("\nARM-ASM emulator. Ver: %s\n", VERSION);
-                        printf("\nVisit: https://github.com/joved-git/arm-asm\n");
+                        printf("\nVisit https://github.com/joved-git/arm-asm\n");
                         printf("Joved - 2024-2025\n");
                         break;
                 }
